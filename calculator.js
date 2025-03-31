@@ -9,20 +9,17 @@ const addition = document.getElementById('addition');
 const subtraction = document.getElementById('subtraction'); 
 const answer = document.getElementById('answer'); 
 
-
 c_button.addEventListener('click', () => {
     result.textContent = ''; 
-    
-    if(calculation.textContent !== ''){
+    if (calculation.textContent !== '') {
         calculation.textContent = ''; 
     }
 });
 
 delete_button.addEventListener('click', () => {
     let text = calculation.textContent; 
-    
-    if(text.length > 0){
-        calculation.textContent = text.slice(0,-1); 
+    if (text.length > 0) {
+        calculation.textContent = text.slice(0, -1); 
     }
 });
 
@@ -34,72 +31,51 @@ divide.addEventListener('click', () => {
     calculation.append('÷');
 });
 
-multiply.addEventListener('click', ()=> {
+multiply.addEventListener('click', () => {
     calculation.append('×');
-})
+});
 
-addition.addEventListener('click' , ()=> {
+addition.addEventListener('click', () => {
     calculation.append('+'); 
-})
+});
 
-subtraction.addEventListener('click', ()=> {
+subtraction.addEventListener('click', () => {
     calculation.append('-'); 
-})
+});
 
-
-for(let i =0; i<=9; i++){
-    const number = document.getElementById(`num-${i}`)
-    if(number){
+for (let i = 0; i <= 9; i++) {
+    const number = document.getElementById(`num-${i}`);
+    if (number) {
         number.addEventListener('click', () => {
             calculation.textContent += i; 
-        })
+        });
     }
 }
 
 
-
-
 answer.addEventListener('click', () => {
-    const expression = calculation.textContent; 
-    let resultValue; 
+    const expression = calculation.textContent;
 
-    if(expression.includes('+')){
-        const numbers = expression.split('+').map(num => parseFloat(num.trim()));
-        
-        if(numbers.every(num => !isNaN(num))){
-            resultValue = numbers.reduce((sum, num) => sum + num, 0); 
+    try {
+        const sanitizedExpression = expression
+            .replace(/×/g, '*')
+            .replace(/÷/g, '/')
+            .replace(/%/g, '/100'); 
+
+        const resultValue = new Function(`return ${sanitizedExpression}`)();
+
+        if (!isNaN(resultValue)) {
+            result.textContent = resultValue;
+        } else {
+            result.textContent = 'Error';
         }
+    } catch (error) {
+        result.textContent = 'Error';
     }
-    else if(expression.includes('×')){
-        const numbers = expression.split('×').map(num => parseFloat(num.trim())); 
-        
-        if(numbers.every(num => !isNaN(num))){
-            resultValue = numbers.reduce((mul, num) => mul * num, 1); 
-        }
-    }
-    else if(expression.includes('-')){
-        const numbers = expression.split('-').map(num => parseFloat(num.trim())); 
-
-        if(numbers.every(num => !isNaN(num))){
-            resultValue = numbers.reduce((sub, num)=> sub-num); 
-        }
-    }
-    else if(expression.includes('÷')){
-        const numbers = expression.split('÷').map(num => parseFloat(num.trim())); 
-
-        if(numbers.every(num => !isNaN(num))){
-            resultValue = numbers.reduce((div, num) => div/num); 
-        }
-    }
+});
 
 
-    if (resultValue !== undefined) {
-        result.textContent = resultValue; 
-        calculation.textContent = resultValue; 
-    } else {
-        console.error('Invalid operation or input');
-    }
-})
+
 
 
 
